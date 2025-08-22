@@ -9,7 +9,6 @@ import { cn } from '@/lib/utils';
 
 import TimerDisplay from './TimerDisplay';
 import TimestampList from './TimestampList';
-import { ShareDialog } from './ShareDialog';
 import { ExportMenu } from './ExportMenu';
 
 const LOCAL_STORAGE_KEY = 'chrono-share-timestamps';
@@ -112,10 +111,9 @@ export default function ChronoShareApp() {
         </CardContent>
       </Card>
       
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 w-full">
-         <ShareDialog timestamps={timestamps} />
+      <div className="grid grid-cols-2 gap-2 w-full">
          <ExportMenu timestamps={timestamps} />
-         <Button variant="destructive" onClick={handleReset} className="sm:col-start-3" disabled={timestamps.length === 0 && elapsedTime === 0}>Reset</Button>
+         <Button variant="destructive" onClick={handleReset} className="col-start-2" disabled={timestamps.length === 0 && elapsedTime === 0}>Reset</Button>
       </div>
 
       <TimestampList timestamps={timestamps} />
