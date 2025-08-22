@@ -4,6 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { formatElapsedTime, timestampsToSessionsWithIdleTime } from '@/lib/utils';
 import { Repeat, Timer } from 'lucide-react';
+import React from 'react';
 
 type TimestampListProps = {
   timestamps: Timestamp[];
