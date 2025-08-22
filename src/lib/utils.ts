@@ -61,9 +61,9 @@ export function timestampsToSessionsWithIdleTime(timestamps: Timestamp[]): Sessi
 
         if (i > 0) {
             const previousSession = sessions[i-1];
-            const previousSessionEndTime = new Date(previousSession.start_datetime).getTime() + previousSession.duration_seconds * 1000;
+            const previousSessionStartTime = new Date(previousSession.start_datetime).getTime();
             const currentSessionStartTime = new Date(currentSession.start_datetime).getTime();
-            idleTimeSeconds = (currentSessionStartTime - previousSessionEndTime) / 1000;
+            idleTimeSeconds = (currentSessionStartTime - previousSessionStartTime) / 1000;
         }
         
         result.push({ session: currentSession, idleTimeSeconds });

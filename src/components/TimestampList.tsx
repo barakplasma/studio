@@ -55,7 +55,7 @@ export default function TimestampList({ timestamps }: TimestampListProps) {
                                 <TableCell colSpan={2} className="py-2 px-4">
                                      <div className="flex items-center justify-center text-xs text-muted-foreground gap-2">
                                         <Repeat className="h-3 w-3"/>
-                                        <span>Time between sessions:</span>
+                                        <span>Time between starts:</span>
                                         <span className="font-mono tabular-nums">{formatElapsedTime(item.idleTimeSeconds)}</span>
                                      </div>
                                 </TableCell>
