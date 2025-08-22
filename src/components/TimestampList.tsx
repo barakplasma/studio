@@ -3,8 +3,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { formatElapsedTime, timestampsToSessionsWithIdleTime } from '@/lib/utils';
-import { Repeat, Timer } from 'lucide-react';
+import { Edit, Repeat, Timer, Trash2 } from 'lucide-react';
 import React from 'react';
+import { Button } from './ui/button';
 
 type TimestampListProps = {
   timestamps: Timestamp[];
@@ -34,6 +35,7 @@ export default function TimestampList({ timestamps }: TimestampListProps) {
                 <TableRow>
                   <TableHead className="w-[160px] sm:w-[200px]">Start Time (Your Local)</TableHead>
                   <TableHead className="text-right">Duration</TableHead>
+                  <TableHead className="w-[100px] text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -49,10 +51,18 @@ export default function TimestampList({ timestamps }: TimestampListProps) {
                                     {formatElapsedTime(item.session.duration_seconds)}
                                 </div>
                             </TableCell>
+                            <TableCell className="text-right">
+                                <Button variant="ghost" size="icon" className="h-8 w-8" disabled>
+                                    <Edit className="h-4 w-4" />
+                                </Button>
+                                <Button variant="ghost" size="icon" className="h-8 w-8" disabled>
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                            </TableCell>
                         </TableRow>
                         {item.idleTimeSeconds !== null && (
                              <TableRow>
-                                <TableCell colSpan={2} className="py-2 px-4">
+                                <TableCell colSpan={3} className="py-2 px-4">
                                      <div className="flex items-center justify-center text-xs text-muted-foreground gap-2">
                                         <Repeat className="h-3 w-3"/>
                                         <span>Time between starts:</span>
