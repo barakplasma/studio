@@ -47,5 +47,39 @@ export function useTimestamps() {
     setTimestamps([]);
   }, []);
 
-  return { timestamps, addTimestamp, resetTimestamps };
+  const deleteSession = useCallback((sessionIndexToDelete: number) => {
+    setTimestamps(prevTimestamps => {
+      let startCount = -1;
+      let startIndex = -1;
+      let stopIndex = -1;
+
+      for (let i = 0; i < prevTimestamps.length; i++) {
+        if (prevTimestamps[i].type === 'start') {
+          startCount++;
+          if (startCount === sessionIndexToDelete) {
+            startIndex = i;
+            // Find the corresponding stop
+            for (let j = i + 1; j < prevTimestamps.length; j++) {
+              if (prevTimestamps[j].type === 'stop') {
+                stopIndex = j;
+                break;
+              }
+            }
+            break;
+          }
+        }
+      }
+
+      if (startIndex !== -1 && stopIndex !== -1) {
+        const newTimestamps = [...prevTimestamps];
+        newTimestamps.splice(stopIndex, 1); // delete stop first to not mess up start index
+        newTimestamps.splice(startIndex, 1);
+        return newTimestamps;
+      }
+      
+      return prevTimestamps;
+    });
+  }, []);
+
+  return { timestamps, addTimestamp, resetTimestamps, deleteSession };
 }

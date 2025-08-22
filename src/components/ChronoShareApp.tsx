@@ -14,7 +14,7 @@ import AnalyticsDisplay from './AnalyticsDisplay';
 
 export default function ChronoShareApp() {
   const { isActive, elapsedTime, startTimer, stopTimer, resetTimer } = useTimer();
-  const { timestamps, addTimestamp, resetTimestamps } = useTimestamps();
+  const { timestamps, addTimestamp, resetTimestamps, deleteSession } = useTimestamps();
   
   const [movingAverageDuration, setMovingAverageDuration] = useState(0);
   const [movingAverageStartTimeDifference, setMovingAverageStartTimeDifference] = useState(0);
@@ -72,7 +72,7 @@ export default function ChronoShareApp() {
         movingAverageStartTimeDifference={movingAverageStartTimeDifference}
       />
 
-      <TimestampList timestamps={timestamps} />
+      <TimestampList timestamps={timestamps} deleteSession={deleteSession} />
     </div>
   );
 }
