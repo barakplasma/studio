@@ -25,7 +25,6 @@ export default function ChronoShareApp() {
   const [movingAverageStartTimeDifference, setMovingAverageStartTimeDifference] = useState(0);
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const startTimeRef = useRef<number>(0);
   const lastUpdateTimeRef = useRef<number>(0);
 
   // Load from local storage on mount
@@ -60,7 +59,7 @@ export default function ChronoShareApp() {
 
   const startTimer = useCallback(() => {
     setIsActive(true);
-    startTimeRef.current = Date.now();
+    setElapsedTime(0); // Reset timer on start
     lastUpdateTimeRef.current = Date.now();
 
     intervalRef.current = setInterval(() => {
@@ -78,8 +77,11 @@ export default function ChronoShareApp() {
       intervalRef.current = null;
     }
     const now = Date.now();
-    const delta = (now - lastUpdateTimeRef.current) / 1000;
-    setElapsedTime((prev) => prev + delta);
+    // Final update to capture the last bit of time
+    if (lastUpdateTimeRef.current > 0) {
+      const delta = (now - lastUpdateTimeRef.current) / 1000;
+      setElapsedTime((prev) => prev + delta);
+    }
   }, []);
 
   const handleToggle = useCallback(() => {
