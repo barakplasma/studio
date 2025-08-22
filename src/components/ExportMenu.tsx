@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { Timestamp } from "@/lib/types";
-import { timestampsToCsv } from "@/lib/utils";
+import { timestampsToCsv, timestampsToSessions } from "@/lib/utils";
 
 export function ExportMenu({ timestamps }: { timestamps: Timestamp[] }) {
   const { toast } = useToast();
@@ -34,7 +34,8 @@ export function ExportMenu({ timestamps }: { timestamps: Timestamp[] }) {
   };
 
   const handleCopyJson = () => {
-    const jsonString = JSON.stringify(timestamps, null, 2);
+    const sessions = timestampsToSessions(timestamps);
+    const jsonString = JSON.stringify(sessions, null, 2);
     copyToClipboard(jsonString, 'JSON');
   };
 

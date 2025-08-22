@@ -16,21 +16,32 @@ export function formatElapsedTime(seconds: number): string {
   return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}.${String(ms).padStart(3, '0').slice(0, 2)}`;
 }
 
-export function timestampsToCsv(timestamps: Timestamp[]): string {
-  const header = 'start_datetime,duration_seconds\n';
-  let rows = [];
+export function timestampsToSessions(timestamps: Timestamp[]): { start_datetime: string; duration_seconds: number }[] {
+  let sessions = [];
   let lastStartTime: Date | null = null;
 
   for (const ts of timestamps) {
     if (ts.type === 'start') {
+      // If there was a start without a stop, ignore it.
       lastStartTime = new Date(ts.time);
     } else if (ts.type === 'stop' && lastStartTime) {
       const stopTime = new Date(ts.time);
       const duration = (stopTime.getTime() - lastStartTime.getTime()) / 1000;
-      rows.push(`"${lastStartTime.toISOString()}",${duration}`);
+      sessions.push({
+        start_datetime: lastStartTime.toISOString(),
+        duration_seconds: duration,
+      });
       lastStartTime = null; // Reset for the next pair
     }
   }
 
+  return sessions;
+}
+
+
+export function timestampsToCsv(timestamps: Timestamp[]): string {
+  const header = 'start_datetime,duration_seconds\n';
+  const sessions = timestampsToSessions(timestamps);
+  const rows = sessions.map(session => `"${session.start_datetime}",${session.duration_seconds}`);
   return header + rows.join('\n');
 }
