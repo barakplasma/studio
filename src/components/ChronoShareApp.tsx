@@ -42,7 +42,7 @@ export default function ChronoShareApp() {
   return (
     <div className="w-full max-w-md mx-auto flex flex-col items-center gap-6">
       <div className="text-center">
-        <h1 className="text-4xl font-bold tracking-tight">ChronoShare</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">ChronoShare</h1>
         <p className="text-muted-foreground">Simple, persistent, shareable timer.</p>
       </div>
 
@@ -52,11 +52,11 @@ export default function ChronoShareApp() {
           <Button
             onClick={handleToggle}
             className={cn(
-              "w-full h-16 text-2xl font-bold rounded-xl transition-all duration-300 transform active:scale-95",
+              "w-full h-14 sm:h-16 text-xl sm:text-2xl font-bold rounded-xl transition-all duration-300 transform active:scale-95",
               isActive ? 'bg-accent text-accent-foreground hover:bg-accent/90' : 'bg-primary text-primary-foreground'
             )}
           >
-            {isActive ? <Square className="mr-3 h-8 w-8" /> : <Play className="mr-3 h-8 w-8" />}
+            {isActive ? <Square className="mr-3 h-7 w-7 sm:h-8 sm:w-8" /> : <Play className="mr-3 h-7 w-7 sm:h-8 sm:w-8" />}
             {isActive ? 'Stop' : 'Start'}
           </Button>
         </CardContent>

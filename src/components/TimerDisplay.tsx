@@ -9,7 +9,7 @@ type TimerDisplayProps = {
 
 const TimerDisplay = ({ elapsedTime }: TimerDisplayProps) => {
   return (
-    <div className="font-mono text-6xl md:text-8xl text-center tracking-tighter text-foreground tabular-nums">
+    <div className="font-mono text-5xl sm:text-6xl md:text-8xl text-center tracking-tighter text-foreground tabular-nums">
       {formatElapsedTime(elapsedTime)}
     </div>
   );

@@ -32,7 +32,7 @@ export default function TimestampList({ timestamps }: TimestampListProps) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[200px]">Start Time (Your Local)</TableHead>
+                  <TableHead className="w-[160px] sm:w-[200px]">Start Time (Your Local)</TableHead>
                   <TableHead className="text-right">Duration</TableHead>
                 </TableRow>
               </TableHeader>
@@ -40,10 +40,10 @@ export default function TimestampList({ timestamps }: TimestampListProps) {
                 {[...sessionsWithIdleTime].reverse().map((item, index) => (
                     <React.Fragment key={index}>
                         <TableRow>
-                            <TableCell className="font-mono text-xs md:text-sm">
+                            <TableCell className="font-mono text-xs">
                                 {new Date(item.session.start_datetime).toLocaleString()}
                             </TableCell>
-                            <TableCell className="font-mono text-sm md:text-base text-right tabular-nums">
+                            <TableCell className="font-mono text-sm text-right tabular-nums">
                                 <div className="flex items-center justify-end gap-2">
                                     <Timer className="h-4 w-4 text-muted-foreground" />
                                     {formatElapsedTime(item.session.duration_seconds)}
