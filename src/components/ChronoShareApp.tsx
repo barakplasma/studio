@@ -6,10 +6,13 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Play, Square } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { calculateMovingAverageDuration, calculateMovingAverageStartTimeDifference } from '@/lib/utils';
 
 import TimerDisplay from './TimerDisplay';
 import TimestampList from './TimestampList';
 import { ExportMenu } from './ExportMenu';
+import AnalyticsDisplay from './AnalyticsDisplay';
+
 
 const LOCAL_STORAGE_KEY = 'chrono-share-timestamps';
 
@@ -17,6 +20,8 @@ export default function ChronoShareApp() {
   const [timestamps, setTimestamps] = useState<Timestamp[]>([]);
   const [isActive, setIsActive] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
+  const [movingAverageDuration, setMovingAverageDuration] = useState(0);
+  const [movingAverageStartTimeDifference, setMovingAverageStartTimeDifference] = useState(0);
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef<number>(0);
@@ -35,12 +40,14 @@ export default function ChronoShareApp() {
     }
   }, []);
 
-  // Save to local storage on change
+  // Save to local storage and update analytics on change
   useEffect(() => {
     try {
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(timestamps));
+      setMovingAverageDuration(calculateMovingAverageDuration(timestamps));
+      setMovingAverageStartTimeDifference(calculateMovingAverageStartTimeDifference(timestamps));
     } catch (error) {
-      console.error("Failed to save timestamps to local storage:", error);
+      console.error("Failed to save timestamps or calculate analytics:", error);
     }
   }, [timestamps]);
 
@@ -115,6 +122,11 @@ export default function ChronoShareApp() {
          <ExportMenu timestamps={timestamps} />
          <Button variant="destructive" onClick={handleReset} className="col-start-2" disabled={timestamps.length === 0 && elapsedTime === 0}>Reset</Button>
       </div>
+
+      <AnalyticsDisplay 
+        movingAverageDuration={movingAverageDuration}
+        movingAverageStartTimeDifference={movingAverageStartTimeDifference}
+      />
 
       <TimestampList timestamps={timestamps} />
     </div>
