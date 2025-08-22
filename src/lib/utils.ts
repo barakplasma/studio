@@ -17,7 +17,20 @@ export function formatElapsedTime(seconds: number): string {
 }
 
 export function timestampsToCsv(timestamps: Timestamp[]): string {
-  const header = 'type,time\n';
-  const rows = timestamps.map(ts => `${ts.type},"${ts.time}"`);
+  const header = 'start_datetime,duration_seconds\n';
+  let rows = [];
+  let lastStartTime: Date | null = null;
+
+  for (const ts of timestamps) {
+    if (ts.type === 'start') {
+      lastStartTime = new Date(ts.time);
+    } else if (ts.type === 'stop' && lastStartTime) {
+      const stopTime = new Date(ts.time);
+      const duration = (stopTime.getTime() - lastStartTime.getTime()) / 1000;
+      rows.push(`"${lastStartTime.toISOString()}",${duration}`);
+      lastStartTime = null; // Reset for the next pair
+    }
+  }
+
   return header + rows.join('\n');
 }
