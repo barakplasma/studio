@@ -1,108 +1,43 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import type { Timestamp } from '@/lib/types';
-import { TimestampSchema } from '@/lib/types';
+import { useState, useEffect, useCallback } from 'react';
+import { useTimer } from '@/hooks/useTimer';
+import { useTimestamps } from '@/hooks/useTimestamps';
+import { calculateMovingAverageDuration, calculateMovingAverageStartTimeDifference, cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Play, Square } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { calculateMovingAverageDuration, calculateMovingAverageStartTimeDifference } from '@/lib/utils';
-
 import TimerDisplay from './TimerDisplay';
 import TimestampList from './TimestampList';
 import { ExportMenu } from './ExportMenu';
 import AnalyticsDisplay from './AnalyticsDisplay';
 
-
-const LOCAL_STORAGE_KEY = 'chrono-share-timestamps';
-
 export default function ChronoShareApp() {
-  const [timestamps, setTimestamps] = useState<Timestamp[]>([]);
-  const [isActive, setIsActive] = useState(false);
-  const [elapsedTime, setElapsedTime] = useState(0);
+  const { isActive, elapsedTime, startTimer, stopTimer, resetTimer } = useTimer();
+  const { timestamps, addTimestamp, resetTimestamps } = useTimestamps();
+  
   const [movingAverageDuration, setMovingAverageDuration] = useState(0);
   const [movingAverageStartTimeDifference, setMovingAverageStartTimeDifference] = useState(0);
 
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const lastUpdateTimeRef = useRef<number>(0);
-
-  // Load from local storage on mount
   useEffect(() => {
-    try {
-      const savedTimestamps = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (savedTimestamps) {
-        const parsedTimestamps = JSON.parse(savedTimestamps);
-        // Validate with Zod
-        const validationResult = TimestampSchema.array().safeParse(parsedTimestamps);
-        if (validationResult.success) {
-          setTimestamps(validationResult.data);
-        } else {
-          console.error("Invalid timestamp data in local storage:", validationResult.error);
-        }
-      }
-    } catch (error) {
-      console.error("Failed to load timestamps from local storage:", error);
-    }
-  }, []);
-
-  // Save to local storage and update analytics on change
-  useEffect(() => {
-    try {
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(timestamps));
-      setMovingAverageDuration(calculateMovingAverageDuration(timestamps));
-      setMovingAverageStartTimeDifference(calculateMovingAverageStartTimeDifference(timestamps));
-    } catch (error) {
-      console.error("Failed to save timestamps or calculate analytics:", error);
-    }
+    setMovingAverageDuration(calculateMovingAverageDuration(timestamps));
+    setMovingAverageStartTimeDifference(calculateMovingAverageStartTimeDifference(timestamps));
   }, [timestamps]);
 
-  const startTimer = useCallback(() => {
-    setIsActive(true);
-    setElapsedTime(0); // Reset timer on start
-    lastUpdateTimeRef.current = Date.now();
-
-    intervalRef.current = setInterval(() => {
-      const now = Date.now();
-      const delta = (now - lastUpdateTimeRef.current) / 1000;
-      setElapsedTime((prev) => prev + delta);
-      lastUpdateTimeRef.current = now;
-    }, 10); // Update every 10ms for smooth display
-  }, []);
-
-  const stopTimer = useCallback(() => {
-    setIsActive(false);
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-    const now = Date.now();
-    // Final update to capture the last bit of time
-    if (lastUpdateTimeRef.current > 0) {
-      const delta = (now - lastUpdateTimeRef.current) / 1000;
-      setElapsedTime((prev) => prev + delta);
-    }
-  }, []);
-
   const handleToggle = useCallback(() => {
-    const newTimestamp: Timestamp = {
-      type: isActive ? 'stop' : 'start',
-      time: new Date().toISOString(),
-    };
-    setTimestamps((prev) => [...prev, newTimestamp]);
-
     if (isActive) {
       stopTimer();
+      addTimestamp('stop');
     } else {
       startTimer();
+      addTimestamp('start');
     }
-  }, [isActive, startTimer, stopTimer]);
+  }, [isActive, startTimer, stopTimer, addTimestamp]);
 
   const handleReset = () => {
-    stopTimer();
-    setElapsedTime(0);
-    setTimestamps([]);
-  }
+    resetTimer();
+    resetTimestamps();
+  };
 
   return (
     <div className="w-full max-w-md mx-auto flex flex-col items-center gap-6">
