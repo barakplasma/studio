@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-import type { Timestamp } from '@/lib/types';
+import type { Timestamp, Session } from '@/lib/types';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -15,11 +15,6 @@ export function formatElapsedTime(seconds: number): string {
 
   return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}.${String(ms).padStart(3, '0').slice(0, 2)}`;
 }
-
-export type Session = {
-  start_datetime: string;
-  duration_seconds: number;
-};
 
 export function timestampsToSessions(timestamps: Timestamp[]): Session[] {
   let sessions: Session[] = [];

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import type { Timestamp } from '@/lib/types';
+import { TimestampSchema } from '@/lib/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Play, Square } from 'lucide-react';
@@ -32,8 +33,14 @@ export default function ChronoShareApp() {
     try {
       const savedTimestamps = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (savedTimestamps) {
-        const parsedTimestamps: Timestamp[] = JSON.parse(savedTimestamps);
-        setTimestamps(parsedTimestamps);
+        const parsedTimestamps = JSON.parse(savedTimestamps);
+        // Validate with Zod
+        const validationResult = TimestampSchema.array().safeParse(parsedTimestamps);
+        if (validationResult.success) {
+          setTimestamps(validationResult.data);
+        } else {
+          console.error("Invalid timestamp data in local storage:", validationResult.error);
+        }
       }
     } catch (error) {
       console.error("Failed to load timestamps from local storage:", error);
