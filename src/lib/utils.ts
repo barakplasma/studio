@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import type { Timestamp, Session } from '@/lib/types';
+import React from 'react';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -24,7 +25,6 @@ export function timestampsToSessions(timestamps: Timestamp[]): Session[] {
     if (ts.type === 'start') {
       if (lastStartTime) {
         // Handle case of a start event before a stop event for the previous session.
-        // Decide if this should be an "incomplete" session or ignored.
         // For now, we just overwrite the last start time.
       }
       lastStartTime = new Date(ts.time);
@@ -40,6 +40,36 @@ export function timestampsToSessions(timestamps: Timestamp[]): Session[] {
   }
 
   return sessions;
+}
+
+type SessionWithIdleTime = {
+  session: Session;
+  idleTimeSeconds: number | null;
+}
+
+export function timestampsToSessionsWithIdleTime(timestamps: Timestamp[]): SessionWithIdleTime[] {
+    const sessions = timestampsToSessions(timestamps);
+    if (sessions.length === 0) {
+        return [];
+    }
+
+    const result: SessionWithIdleTime[] = [];
+
+    for (let i = 0; i < sessions.length; i++) {
+        const currentSession = sessions[i];
+        let idleTimeSeconds: number | null = null;
+
+        if (i > 0) {
+            const previousSession = sessions[i-1];
+            const previousSessionEndTime = new Date(previousSession.start_datetime).getTime() + previousSession.duration_seconds * 1000;
+            const currentSessionStartTime = new Date(currentSession.start_datetime).getTime();
+            idleTimeSeconds = (currentSessionStartTime - previousSessionEndTime) / 1000;
+        }
+        
+        result.push({ session: currentSession, idleTimeSeconds });
+    }
+
+    return result;
 }
 
 
